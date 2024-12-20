@@ -3,3 +3,4 @@ rpc:
   version: 1.0
   host: localhost
   port: 8080
+  isMock: true

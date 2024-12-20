@@ -1,5 +1,0 @@
-rpc:
-  name: rpc-yml
-  version: 1.0
-  host: localhost
-  port: 8080
