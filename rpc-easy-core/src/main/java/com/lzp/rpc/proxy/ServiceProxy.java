@@ -7,6 +7,7 @@ import com.lzp.rpc.model.RpcRequest;
 import com.lzp.rpc.model.RpcResponse;
 import com.lzp.rpc.serializer.JdkSerializer;
 import com.lzp.rpc.serializer.Serializer;
+import com.lzp.rpc.serializer.SerializerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -14,7 +15,7 @@ import java.lang.reflect.Method;
 public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
-        final Serializer serializer = new JdkSerializer();
+        final Serializer serializer = SerializerFactory.getSerializer();
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())

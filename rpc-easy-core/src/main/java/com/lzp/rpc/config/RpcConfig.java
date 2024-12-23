@@ -1,6 +1,9 @@
 package com.lzp.rpc.config;
 
+import com.lzp.rpc.serializer.SerializerKeys;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class RpcConfig {
@@ -10,5 +13,6 @@ public class RpcConfig {
     private String host = "127.0.0.1";
     private int port = 8080;
     private boolean isMock = false;
+    private String serializer = SerializerKeys.JDK;
 
 }
