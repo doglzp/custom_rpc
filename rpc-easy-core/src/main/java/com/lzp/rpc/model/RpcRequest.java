@@ -36,4 +36,6 @@ public class RpcRequest implements Serializable {
      */
     private Object[] args;
 
+    private String serviceVersion;
+
 }

@@ -26,7 +26,7 @@ public class SpiLoader {
 
     public static final String RPC_CUSTOM_SPI_DIR = "META-INF/rpc/custom/";
 
-    // 系统路径写在前面，先加载系统，这样就能做到优先加载用户自定配置
+    // 系统路径写在前面，先加载系统,如果有用户配置就会覆盖系统配置
     public static final String[] SPI_DIRS = {RPC_SYSTEM_SPI_DIR, RPC_CUSTOM_SPI_DIR};
 
     public static <T> T getInstance(Class<T> tClass, String key) {

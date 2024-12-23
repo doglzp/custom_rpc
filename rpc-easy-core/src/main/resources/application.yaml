@@ -3,3 +3,12 @@ rpc:
   version: 1.0
   host: localhost
   port: 8080
+  registry:
+    type: etcd
+    address: 127.0.0.1:2380
+    username: admin
+    password: admin
+    timeout: 3000
+    test:
+      test1: 123
+      test2: 456
