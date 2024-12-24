@@ -10,10 +10,12 @@ public class EasyConsumerExample {
 
     public static void main(String[] args) {
         RpcApplication.init();
-        UserService userService = ProxyFactory.getProxy(UserService.class);
-        User user = new User();
-        user.setName("lzp");
-        String userName = userService.getUserName(user);
-        System.out.println(userName);
+        for (int i = 0; i < 3; i++) {
+            UserService userService = ProxyFactory.getProxy(UserService.class);
+            User user = new User();
+            user.setName("lzp");
+            String userName = userService.getUserName(user);
+            System.out.println(userName + i);
+        }
     }
 }

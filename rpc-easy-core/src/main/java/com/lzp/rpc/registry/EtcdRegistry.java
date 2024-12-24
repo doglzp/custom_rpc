@@ -1,6 +1,7 @@
 package com.lzp.rpc.registry;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
@@ -10,6 +11,7 @@ import io.etcd.jetcd.*;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.watch.WatchEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -30,6 +32,12 @@ public class EtcdRegistry implements Registry {
      * 本机注册的节点 key 集合（用于维护续期）
      */
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
+
+    /**
+     * 正在监听的 key 集合
+     */
+    private final Set<String> watchingKeySet = new ConcurrentHashSet<>();
+
 
     private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
 
@@ -68,14 +76,19 @@ public class EtcdRegistry implements Registry {
     public List<ServiceMetaInfo> discovery(String serviceKey) {
         serviceKey = ROOT_PATH + serviceKey + "/";
         List<ServiceMetaInfo> cacheServiceMetaInfoList = registryServiceCache.readCache(serviceKey);
-        if (!cacheServiceMetaInfoList.isEmpty()){
+        if (cacheServiceMetaInfoList != null && !cacheServiceMetaInfoList.isEmpty()){
             return cacheServiceMetaInfoList;
         }
         GetOption getOption = GetOption.builder().isPrefix(true).build();
         try {
             GetResponse response = kvClient.get(ByteSequence.from(serviceKey, StandardCharsets.UTF_8), getOption).get();
             List<ServiceMetaInfo> serviceMetaInfoList = response.getKvs().stream()
-                    .map(kv -> JSONUtil.toBean(kv.getValue().toString(StandardCharsets.UTF_8), ServiceMetaInfo.class))
+                    .map(kv -> {
+                        String key = kv.getKey().toString(StandardCharsets.UTF_8);
+                        // 要监听具体服务节点key
+                        watch(key);
+                        return JSONUtil.toBean(kv.getValue().toString(StandardCharsets.UTF_8), ServiceMetaInfo.class);
+                    })
                     .collect(Collectors.toList());
             registryServiceCache.writeCache(serviceKey, serviceMetaInfoList);
             return serviceMetaInfoList;
@@ -130,6 +143,25 @@ public class EtcdRegistry implements Registry {
         // 支持秒级别定时任务
         CronUtil.setMatchSecond(true);
         CronUtil.start();
+    }
+
+    @Override
+    public void watch(String serviceNodeKey) {
+        Watch watchClient = client.getWatchClient();
+        if (watchingKeySet.add(serviceNodeKey)){
+            watchClient.watch(ByteSequence.from(serviceNodeKey, StandardCharsets.UTF_8), watchResponse -> {
+                for (WatchEvent event : watchResponse.getEvents()) {
+                    switch (event.getEventType()){
+                        case DELETE:
+                            registryServiceCache.clearCache(serviceNodeKey);
+                            break;
+                        case PUT:
+                        default:
+                            break;
+                    }
+                }
+            });
+        }
     }
 
 }

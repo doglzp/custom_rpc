@@ -5,6 +5,7 @@ import com.lzp.rpc.model.ServiceMetaInfo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 注册中心服务本地缓存
@@ -14,7 +15,7 @@ public class RegistryServiceCache {
     /**
      * 服务缓存
      */
-    Map<String, List<ServiceMetaInfo>> serviceCache;
+    Map<String, List<ServiceMetaInfo>> serviceCache = new ConcurrentHashMap<>();
 
     /**
      * 写缓存
@@ -38,7 +39,7 @@ public class RegistryServiceCache {
     /**
      * 清空缓存
      */
-    void clearCache() {
-        this.serviceCache = null;
+    void clearCache(String key) {
+        this.serviceCache.remove(key);
     }
 }
