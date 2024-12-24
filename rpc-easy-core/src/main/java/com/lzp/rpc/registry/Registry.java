@@ -16,4 +16,6 @@ public interface Registry {
     void unRegister(ServiceMetaInfo serviceMetaInfo);
 
     void destroy();
+
+    void heartBeat();
 }
