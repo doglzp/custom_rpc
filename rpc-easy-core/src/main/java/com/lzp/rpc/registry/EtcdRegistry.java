@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class EtcdRegistry implements Registry {
@@ -31,6 +30,8 @@ public class EtcdRegistry implements Registry {
      * 本机注册的节点 key 集合（用于维护续期）
      */
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
+
+    private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
 
 
     @Override
@@ -65,12 +66,19 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public List<ServiceMetaInfo> discovery(String serviceKey) {
+        serviceKey = ROOT_PATH + serviceKey + "/";
+        List<ServiceMetaInfo> cacheServiceMetaInfoList = registryServiceCache.readCache(serviceKey);
+        if (!cacheServiceMetaInfoList.isEmpty()){
+            return cacheServiceMetaInfoList;
+        }
         GetOption getOption = GetOption.builder().isPrefix(true).build();
         try {
             GetResponse response = kvClient.get(ByteSequence.from(serviceKey, StandardCharsets.UTF_8), getOption).get();
-            return response.getKvs().stream()
+            List<ServiceMetaInfo> serviceMetaInfoList = response.getKvs().stream()
                     .map(kv -> JSONUtil.toBean(kv.getValue().toString(StandardCharsets.UTF_8), ServiceMetaInfo.class))
                     .collect(Collectors.toList());
+            registryServiceCache.writeCache(serviceKey, serviceMetaInfoList);
+            return serviceMetaInfoList;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

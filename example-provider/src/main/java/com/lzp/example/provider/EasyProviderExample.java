@@ -13,7 +13,7 @@ public class EasyProviderExample {
     public static void main(String[] args) {
         RpcApplication.init();
         String serviceName = UserService.class.getName();
-//        LocalRegistry.register(serviceName, UserServiceImpl.class);
+        LocalRegistry.register(serviceName, UserServiceImpl.class);
 
         Registry registry = RegistryFactory.getRegistry();
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();

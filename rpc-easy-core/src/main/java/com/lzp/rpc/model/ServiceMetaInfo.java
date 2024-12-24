@@ -19,7 +19,7 @@ public class ServiceMetaInfo {
     /**
      * 服务版本号
      */
-    private String serviceVersion = "1.0";
+    private String serviceVersion = "1";
 
     /**
      * 服务域名
