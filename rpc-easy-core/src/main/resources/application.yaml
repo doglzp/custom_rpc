@@ -5,7 +5,7 @@ rpc:
   port: 8080
   registry:
     type: etcd
-    address: 127.0.0.1:2380
+    address: http://192.168.3.130:2379
     username: admin
     password: admin
     timeout: 3000

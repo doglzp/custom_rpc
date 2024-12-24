@@ -21,7 +21,7 @@ import java.util.Map;
 public class ConfigUtils {
 
     public static <T> T getConfig(String prefix, Class<T> clazz) {
-        return getConfig(prefix, clazz, null, FileFormatConstant.YML);
+        return getConfig(prefix, clazz, null, FileFormatConstant.YAML);
     }
 
     public static <T> T getProConfig(String prefix, Class<T> clazz, String environment) {

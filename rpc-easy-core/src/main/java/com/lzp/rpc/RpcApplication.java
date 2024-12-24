@@ -1,7 +1,10 @@
 package com.lzp.rpc;
 
+import com.lzp.rpc.config.RegistryConfig;
 import com.lzp.rpc.config.RpcConfig;
 import com.lzp.rpc.constans.RpcConstants;
+import com.lzp.rpc.registry.EtcdRegistry;
+import com.lzp.rpc.registry.RegistryFactory;
 import com.lzp.rpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +19,10 @@ public class RpcApplication {
     public static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
         log.info("rpc config init, config:{}", rpcConfig);
+
+        RegistryConfig registryConfig = RpcApplication.getRpcConfig().getRegistryConfig();
+        RegistryFactory.getRegistry().init(registryConfig);
+        log.info("registry init, config:{}", registryConfig);
     }
 
     public static void init() {
