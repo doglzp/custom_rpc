@@ -2,8 +2,7 @@ package com.lzp.rpc;
 
 import com.lzp.rpc.config.RegistryConfig;
 import com.lzp.rpc.config.RpcConfig;
-import com.lzp.rpc.constans.RpcConstants;
-import com.lzp.rpc.registry.EtcdRegistry;
+import com.lzp.rpc.constants.RpcConstant;
 import com.lzp.rpc.registry.Registry;
 import com.lzp.rpc.registry.RegistryFactory;
 import com.lzp.rpc.utils.ConfigUtils;
@@ -32,7 +31,7 @@ public class RpcApplication {
     public static void init() {
         RpcConfig rpcNewConfig;
         try {
-            rpcNewConfig = ConfigUtils.getConfig(RpcConstants.DEFAULT_CONFIG_PREFIX, RpcConfig.class);
+            rpcNewConfig = ConfigUtils.getConfig(RpcConstant.DEFAULT_CONFIG_PREFIX, RpcConfig.class);
         } catch (Exception e) {
             rpcNewConfig = new RpcConfig();
         }
@@ -47,7 +46,7 @@ public class RpcApplication {
         if (rpcConfig == null) {
             synchronized (RpcApplication.class) {
                 if (rpcConfig == null) {
-                    rpcConfig = ConfigUtils.getConfig(RpcConstants.DEFAULT_CONFIG_PREFIX, RpcConfig.class, env, fileFormat);
+                    rpcConfig = ConfigUtils.getConfig(RpcConstant.DEFAULT_CONFIG_PREFIX, RpcConfig.class, env, fileFormat);
                 }
             }
         }

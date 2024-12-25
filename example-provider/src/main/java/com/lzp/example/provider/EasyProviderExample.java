@@ -6,8 +6,9 @@ import com.lzp.rpc.model.ServiceMetaInfo;
 import com.lzp.rpc.registry.LocalRegistry;
 import com.lzp.rpc.registry.Registry;
 import com.lzp.rpc.registry.RegistryFactory;
-import com.lzp.rpc.server.HttpServer;
-import com.lzp.rpc.server.VertxHttpServer;
+import com.lzp.rpc.server.Server;
+import com.lzp.rpc.server.http.VertxHttpServer;
+import com.lzp.rpc.server.tcp.VertxTcpServer;
 
 public class EasyProviderExample {
     public static void main(String[] args) {
@@ -26,7 +27,7 @@ public class EasyProviderExample {
             throw new RuntimeException(e);
         }
 
-        HttpServer server = new VertxHttpServer();
+        Server server = new VertxTcpServer();
         server.doStart(RpcApplication.getRpcConfig().getPort());
     }
 }

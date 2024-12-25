@@ -1,9 +1,8 @@
-package com.lzp.rpc.server;
+package com.lzp.rpc.server.http;
 
 import com.lzp.rpc.model.RpcRequest;
 import com.lzp.rpc.model.RpcResponse;
 import com.lzp.rpc.registry.LocalRegistry;
-import com.lzp.rpc.serializer.JdkSerializer;
 import com.lzp.rpc.serializer.Serializer;
 import com.lzp.rpc.serializer.SerializerFactory;
 import io.vertx.core.Handler;
@@ -13,7 +12,7 @@ import io.vertx.core.http.HttpServerRequest;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-public class HttpRequestHandler implements Handler<HttpServerRequest> {
+public class VertxHttpRequestHandler implements Handler<HttpServerRequest> {
     @Override
     public void handle(HttpServerRequest request) {
         final Serializer serializer = SerializerFactory.getSerializer();

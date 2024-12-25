@@ -1,0 +1,9 @@
+rpc:
+  name: provider-yaml
+  version: 1
+  host: localhost
+  port: 8080
+  registry:
+    type: etcd
+    address: http://192.168.3.130:2379
+    timeout: 3000

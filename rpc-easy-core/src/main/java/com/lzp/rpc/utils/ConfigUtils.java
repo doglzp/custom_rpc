@@ -1,7 +1,6 @@
 package com.lzp.rpc.utils;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.io.resource.NoResourceException;
 import cn.hutool.core.io.resource.Resource;
 import cn.hutool.core.io.resource.ResourceUtil;
@@ -10,10 +9,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.setting.dialect.Props;
 import cn.hutool.setting.yaml.YamlUtil;
 import com.lzp.rpc.anno.Prefix;
-import com.lzp.rpc.config.RpcConfig;
-import com.lzp.rpc.constans.FileFormatConstant;
+import com.lzp.rpc.constants.FileFormatConstant;
 
-import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Map;

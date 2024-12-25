@@ -1,6 +1,6 @@
 package com.lzp.rpc.server;
 
-public interface HttpServer {
+public interface Server {
 
     void doStart(int port);
 }
