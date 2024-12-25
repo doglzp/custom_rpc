@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class VertxTcpRequestHandler implements Handler<NetSocket> {
     @Override
     public void handle(NetSocket socket) {
-        socket.handler(buffer -> {
+        socket.handler(new VertxTcpBufferHandlerWrapper(buffer -> {
             ProtocolMessage<RpcRequest> protocolMessage;
             // 解码，调用，编码返回
             try {
@@ -26,7 +26,7 @@ public class VertxTcpRequestHandler implements Handler<NetSocket> {
             }
             RpcRequest rpcRequest = protocolMessage.getBody();
             RpcResponse rpcResponse = new RpcResponse();
-            if (rpcRequest == null){
+            if (rpcRequest == null) {
                 rpcResponse.setMessage("request is null");
                 doResponse(socket, rpcResponse, protocolMessage.getHeader());
                 return;
@@ -44,7 +44,7 @@ public class VertxTcpRequestHandler implements Handler<NetSocket> {
                 throw new RuntimeException(e);
             }
             doResponse(socket, rpcResponse, protocolMessage.getHeader());
-        });
+        }));
     }
 
     public void doResponse(NetSocket socket, RpcResponse rpcResponse, ProtocolMessage.Header header) {

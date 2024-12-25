@@ -19,9 +19,4 @@ public class VertxTcpServer implements Server {
             }
         });
     }
-
-    public static void main(String[] args) {
-        VertxTcpServer vertxTcpServer = new VertxTcpServer();
-        vertxTcpServer.doStart(8080);
-    }
 }
