@@ -1,0 +1,3 @@
+roundRobin=com.lzp.rpc.loadbalancer.RoundRobinLoadBalancer
+random=com.lzp.rpc.loadbalancer.RandomLoadBalancer
+consistentHash=com.lzp.rpc.loadbalancer.ConsistentHashLoadBalancer

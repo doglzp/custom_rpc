@@ -1,10 +1,9 @@
 package com.lzp.rpc.config;
 
 import com.lzp.rpc.anno.Prefix;
+import com.lzp.rpc.loadbalancer.LoadBalancerKeys;
 import com.lzp.rpc.serializer.SerializerKeys;
 import lombok.Data;
-
-import java.io.Serializable;
 
 @Data
 public class RpcConfig {
@@ -20,6 +19,8 @@ public class RpcConfig {
     private boolean isMock = false;
 
     private String serializer = SerializerKeys.JDK;
+
+    private String loadBalancer = LoadBalancerKeys.RANDOM;
 
     @Prefix("registry")
     private RegistryConfig registryConfig = new RegistryConfig();

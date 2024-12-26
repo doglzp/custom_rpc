@@ -8,6 +8,8 @@ import com.lzp.rpc.constants.ProtocolConstant;
 import com.lzp.rpc.constants.RpcConstant;
 import com.lzp.rpc.enums.ProtocolMessageSerializerEnum;
 import com.lzp.rpc.enums.ProtocolMessageTypeEnum;
+import com.lzp.rpc.loadbalancer.LoadBalancer;
+import com.lzp.rpc.loadbalancer.LoadBalancerFactory;
 import com.lzp.rpc.model.RpcRequest;
 import com.lzp.rpc.model.RpcResponse;
 import com.lzp.rpc.model.ServiceMetaInfo;
@@ -29,7 +31,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceProxy implements InvocationHandler {
     @Override
@@ -42,7 +46,7 @@ public class ServiceProxy implements InvocationHandler {
                 .args(args)
                 .build();
         try {
-            ServiceMetaInfo serviceMetaInfo = discoveryService(serviceName);
+            ServiceMetaInfo serviceMetaInfo = discoveryService(serviceName, method.getName());
             return VertxTcpClient.doRequest(serviceMetaInfo, rpcRequest).getData();
         }catch (Exception e){
             e.printStackTrace();
@@ -64,7 +68,7 @@ public class ServiceProxy implements InvocationHandler {
         }
     }
 
-    private ServiceMetaInfo discoveryService(String serviceName) throws Exception {
+    private ServiceMetaInfo discoveryService(String serviceName, String methodName) {
         Registry registry = RegistryFactory.getRegistry();
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
@@ -73,6 +77,10 @@ public class ServiceProxy implements InvocationHandler {
         if (nodeServiceMetaInfoList.isEmpty()){
             throw new RuntimeException("can not find service");
         }
-        return nodeServiceMetaInfoList.get(0);
+        LoadBalancer loadBalancer = LoadBalancerFactory.getLoadBalancer();
+        Map<String, Object> requestParams = new ConcurrentHashMap<>();
+        requestParams.put("serviceName", serviceName);
+        requestParams.put("methodName", methodName);
+        return loadBalancer.select(requestParams, nodeServiceMetaInfoList);
     }
 }
