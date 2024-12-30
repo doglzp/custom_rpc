@@ -8,6 +8,8 @@ import com.lzp.rpc.constants.ProtocolConstant;
 import com.lzp.rpc.constants.RpcConstant;
 import com.lzp.rpc.enums.ProtocolMessageSerializerEnum;
 import com.lzp.rpc.enums.ProtocolMessageTypeEnum;
+import com.lzp.rpc.fault.retry.RetryStrategy;
+import com.lzp.rpc.fault.retry.RetryStrategyFactory;
 import com.lzp.rpc.loadbalancer.LoadBalancer;
 import com.lzp.rpc.loadbalancer.LoadBalancerFactory;
 import com.lzp.rpc.model.RpcRequest;
@@ -47,7 +49,9 @@ public class ServiceProxy implements InvocationHandler {
                 .build();
         try {
             ServiceMetaInfo serviceMetaInfo = discoveryService(serviceName, method.getName());
-            return VertxTcpClient.doRequest(serviceMetaInfo, rpcRequest).getData();
+            RetryStrategy retryStrategy = RetryStrategyFactory.getRetryStrategy();
+            RpcResponse rpcResponse = retryStrategy.retry(() -> VertxTcpClient.doRequest(serviceMetaInfo, rpcRequest));
+            return rpcResponse.getData();
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("调用失败" + e.getMessage());

@@ -1,6 +1,7 @@
 package com.lzp.rpc.config;
 
 import com.lzp.rpc.anno.Prefix;
+import com.lzp.rpc.fault.retry.RetryStrategyKeys;
 import com.lzp.rpc.loadbalancer.LoadBalancerKeys;
 import com.lzp.rpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -21,6 +22,8 @@ public class RpcConfig {
     private String serializer = SerializerKeys.JDK;
 
     private String loadBalancer = LoadBalancerKeys.RANDOM;
+
+    private String retryStrategy = RetryStrategyKeys.NO;
 
     @Prefix("registry")
     private RegistryConfig registryConfig = new RegistryConfig();
