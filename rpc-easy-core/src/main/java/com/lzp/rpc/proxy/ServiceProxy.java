@@ -10,6 +10,8 @@ import com.lzp.rpc.enums.ProtocolMessageSerializerEnum;
 import com.lzp.rpc.enums.ProtocolMessageTypeEnum;
 import com.lzp.rpc.fault.retry.RetryStrategy;
 import com.lzp.rpc.fault.retry.RetryStrategyFactory;
+import com.lzp.rpc.fault.tolerant.TolerantStrategy;
+import com.lzp.rpc.fault.tolerant.TolerantStrategyFactory;
 import com.lzp.rpc.loadbalancer.LoadBalancer;
 import com.lzp.rpc.loadbalancer.LoadBalancerFactory;
 import com.lzp.rpc.model.RpcRequest;
@@ -50,8 +52,13 @@ public class ServiceProxy implements InvocationHandler {
         try {
             ServiceMetaInfo serviceMetaInfo = discoveryService(serviceName, method.getName());
             RetryStrategy retryStrategy = RetryStrategyFactory.getRetryStrategy();
-            RpcResponse rpcResponse = retryStrategy.retry(() -> VertxTcpClient.doRequest(serviceMetaInfo, rpcRequest));
-            return rpcResponse.getData();
+            try {
+                RpcResponse rpcResponse = retryStrategy.retry(() -> VertxTcpClient.doRequest(serviceMetaInfo, rpcRequest));
+                return rpcResponse.getData();
+            } catch (Exception e) {
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getTolerantStrategy();
+                return tolerantStrategy.doTolerant(null, e).getData();
+            }
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("调用失败" + e.getMessage());
